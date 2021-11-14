@@ -1,9 +1,10 @@
-FROM golang:alpine
+FROM golang:1.16-alpine
 
-WORKDIR /golang-docker
+WORKDIR /app
 
 ADD . .
 
 RUN go mod download
 
-ENTRYPOINT go build  && ./main
+RUN go build -o /main
+CMD [ "/main" ]

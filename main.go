@@ -5,7 +5,6 @@ import (
 	"github.com/aicam/CryptoNotifier/server"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -17,15 +16,15 @@ func main() {
 	log.Println(time.Now())
 	var user DB.UsersData
 	username := "aicam"
-	key := os.Getenv("SERVER_KEY")
-	log.Println(key)
+	//key := os.Getenv("SERVER_KEY")
+	//log.Println(key)
 	if err := s.DB.Where(DB.UsersData{Username: username}).Find(&user).Error; err != nil {
 		s.DB.Save(&DB.UsersData{
 			Username:   username,
 			LastOnline: time.Now(),
 		})
 	}
-	err := http.ListenAndServe("0.0.0.0:4300", s.Router)
+	err := http.ListenAndServe("0.0.0.0:5200", s.Router)
 	if err != nil {
 		log.Print(err)
 	}
