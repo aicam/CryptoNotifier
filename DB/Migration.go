@@ -9,15 +9,12 @@ import (
 
 type WebData struct {
 	gorm.Model
-	Status      string    `json:"status"`
-	Error       string    `json:"error"`
-	Username    string    `json:"username"`
-	DubaiTxt    string    `json:"dubai_txt"`
-	DubaiTime   time.Time `json:"dubai_time"`
-	ArmeniaTxt  string    `json:"armenia_txt"`
-	ArmeniaTime time.Time `json:"armenia_time"`
-	TurkeyTxt   string    `json:"turkey_txt"`
-	TurkeyTime  time.Time `json:"turkey_time"`
+	Status      string `json:"status"`
+	Error       string `json:"error"`
+	AirdropName string `json:"airdrop_name"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	UniqueID    string `json:"unique_id"`
 }
 
 type UsersData struct {

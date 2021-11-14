@@ -60,6 +60,7 @@ func (s *Server) GetToken() gin.HandlerFunc {
 func (s *Server) AddInfo() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var jsData DB.WebData
+		var jsExist DB.WebData
 		err := context.BindJSON(&jsData)
 		if err != nil {
 			context.JSON(http.StatusOK, Response{
@@ -68,49 +69,15 @@ func (s *Server) AddInfo() gin.HandlerFunc {
 			})
 			return
 		}
-		username := context.GetHeader("username")
-		_ = "2006-01-02T15:04:05Z07:00"
-		if jsData.ArmeniaTime.Year() != 1 {
-			go sendNotificationByPushOver(jsData.ArmeniaTxt, "Armenia Time found")
-			go sendNotificationByIFTTT(jsData.ArmeniaTxt, "Armenia Time found")
-			go SendNotificationByTelegram(jsData.ArmeniaTxt, "Armenia Time found")
-		}
-		if jsData.DubaiTime.Month() >= 8 {
-			go sendNotificationByPushOver(jsData.DubaiTxt, "Dubai Time found")
-			go sendNotificationByIFTTT(jsData.DubaiTxt, "Dubai Time found")
-			go SendNotificationByTelegram(jsData.DubaiTxt, "Dubai Time found")
-		}
-		if jsData.TurkeyTime.Year() != 1 {
-			go sendNotificationByPushOver(jsData.DubaiTxt, "Dubai Time found")
-			go sendNotificationByIFTTT(jsData.DubaiTxt, "Dubai Time found")
-			go SendNotificationByTelegram(jsData.DubaiTxt, "Dubai Time found")
-		}
-		if jsData.DubaiTime.Year() == 1 {
-			jsData.DubaiTime = time.Now()
-		}
-		if jsData.TurkeyTime.Year() == 1 {
-			jsData.TurkeyTime = time.Now()
-		}
-		if jsData.ArmeniaTime.Year() == 1 {
-			jsData.ArmeniaTime = time.Now()
-		}
-		//if jsData.Priority >= 0 {
-		//	timeFounded, err := time.Parse(layout, jsData.ClosestDate)
-		//	if err != nil {
-		//		context.JSON(http.StatusOK, Response{
-		//			StatusCode: -1,
-		//			Body:       err.Error(),
-		//		})
-		//		return
-		//	}
-		//	if jsData.Priority > 0 {
-		//		log.Print(strconv.Itoa(int(timeFounded.Sub(time.Now()).Hours() / 24)))
-		//		go sendNotificationByPushOver("In "+timeFounded.Month().String()+" "+strconv.Itoa(timeFounded.Day()), "Time found in "+
-		//			strconv.Itoa(int(timeFounded.Sub(time.Now()).Hours()/24))+" days"+" in "+jsData.Country)
-		//	}
-		//}
 
-		jsData.Username = username
+		if s.DB.Where(DB.WebData{UniqueID: jsData.UniqueID}).Find(&jsExist).RecordNotFound() == false {
+			if jsExist.UpdatedAt.Before(time.Now().Add(-time.Hour * 10)) {
+				go SendNotificationByTelegram(jsData.Body, jsData.Title)
+				jsExist.UpdatedAt = time.Now()
+				s.DB.Save(&jsExist)
+			}
+		}
+		go SendNotificationByTelegram(jsData.Body, jsData.Title)
 		s.DB.Save(&jsData)
 		context.JSON(http.StatusOK, Response{
 			StatusCode: 1,

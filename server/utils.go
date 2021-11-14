@@ -28,20 +28,17 @@ func convertMonthToInt(month string) int {
 	return m[month]
 }
 
-
 type NotifReqTelegram struct {
 	ChatId              string `json:"chat_id"`
 	Text                string `json:"text"`
 	DisableNotification bool   `json:"disable_notification"`
 }
 
-
-
 func SendNotificationByTelegram(message string, title string) {
 	log.Println("Send by Telegram started")
-	url := "https://api.telegram.org/bot1908920066:AAH83I6JFKGsWfE1f20f0y_S-6NDHKEjWW4/sendMessage"
+	url := "https://api.telegram.org/bot2133332644:AAGXWbjIr33p9P-_WE4gSYB9Iq_ZjK3HBZU/sendMessage"
 	jsonBytes, err := json.Marshal(&NotifReqTelegram{
-		ChatId:              "-1001435126738",
+		ChatId:              "@airdropdiggersangin",
 		Text:                title + "\n" + message,
 		DisableNotification: false,
 	})
@@ -61,7 +58,6 @@ func SendNotificationByTelegram(message string, title string) {
 	log.Println("response Body:", string(body))
 	log.Println("Send by Telegram ended")
 }
-
 
 func ZeroPadding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
