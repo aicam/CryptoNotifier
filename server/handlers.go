@@ -69,19 +69,24 @@ func (s *Server) AddInfo() gin.HandlerFunc {
 			})
 			return
 		}
-
+		var respBody string
 		if s.DB.Where(DB.WebData{UniqueID: jsData.UniqueID}).Find(&jsExist).RecordNotFound() == false {
 			if jsExist.UpdatedAt.Before(time.Now().Add(-time.Hour * 10)) {
 				go SendNotificationByTelegram(jsData.Body, jsData.Title)
 				jsExist.UpdatedAt = time.Now()
 				s.DB.Save(&jsExist)
+				respBody = "Airdrop reminded again"
+			} else {
+				respBody = "Airdrop has been added less than 10 hours ago"
 			}
+		} else {
+			go SendNotificationByTelegram(jsData.Body, jsData.Title)
+			s.DB.Save(&jsData)
+			respBody = "Airdrop added!"
 		}
-		go SendNotificationByTelegram(jsData.Body, jsData.Title)
-		s.DB.Save(&jsData)
 		context.JSON(http.StatusOK, Response{
 			StatusCode: 1,
-			Body:       "Data saved successfully!",
+			Body:       respBody,
 		})
 	}
 }
