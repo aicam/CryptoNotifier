@@ -11,7 +11,7 @@ import (
 func main() {
 	// migration
 	s := server.NewServer()
-	s.DB = DB.DbSqlMigration("aicam:021021ali@tcp(localhost:3306)/cryptodb?charset=utf8mb4&parseTime=True")
+	s.DB = DB.DbSqlMigration("aicam:021021ali@tcp(db:3306)/cryptodb?charset=utf8mb4&parseTime=True")
 	s.Routes()
 	log.Println(time.Now())
 	var user DB.UsersData
